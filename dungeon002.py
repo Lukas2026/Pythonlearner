@@ -1,6 +1,6 @@
 player = '@'
 hp = 20
-px,py,pz = 1,1,0
+px,py,pz = 3,3,0
 level1 = '''
 #############################################################
 #...........................................................#
@@ -38,6 +38,8 @@ for raw in (level1,level2):
     dungeon.append(level)
     
 print(dungeon)
+
+print(dungeon[0][2])
     
 # # ..... rock
 # f ...... food
@@ -49,7 +51,7 @@ while hp > 0:
             if x == px and y == py:
                 print(player, end = '')
             else:
-                print(dungeon[pz][py][px],end = '')
+                print(char,end = '')
         print()
     command = input('{} hp >>>'.format(hp))
     deltax = 0 #wo der spieler gehen will
@@ -68,16 +70,18 @@ while hp > 0:
     if command == 'climb down':
         pz += 1
     #check ob in felsen
-    target = level[pz][py + deltay][px + deltax]
-    if target == '#':
-        print('ouch!')
-        hp -= 1
-        print('you have',hp,'hitpoints')
-        deltax = 0
+    try:
+        target = level[pz][py + deltay][px + deltax]
+    except:
+        print("index error")
+    #if target == '#':
+    #    print('ouch!')
+    #    hp -= 1
+    #    print('you have',hp,'hitpoints')
+    #    deltax = 0
        
     #movement
     px += deltax
     py += deltay
 print('Game over')
     
-
