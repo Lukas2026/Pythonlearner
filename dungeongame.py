@@ -8,7 +8,7 @@ level = []
 raw = '#.......f....g.....M..M..g..P..#'
 level = list(raw)
 print(level)
-while True:
+while hp > 0:
     for x,char in enumerate(level):
         if x == px:
             print(player,end = '')
@@ -26,7 +26,9 @@ while True:
     if target == '#':
         print('ouch!')
         hp -= 1
+        print('you have',hp,'hitpoints')
         deltax = 0
-        
+       
     #movement
     px += deltax
+print('Game over')
