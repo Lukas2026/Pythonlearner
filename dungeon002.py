@@ -70,15 +70,12 @@ while hp > 0:
     if command == 'climb down':
         pz += 1
     #check ob in felsen
-    try:
-        target = level[pz][py + deltay][px + deltax]
-    except:
-        print("index error")
-    #if target == '#':
-    #    print('ouch!')
-    #    hp -= 1
-    #    print('you have',hp,'hitpoints')
-    #    deltax = 0
+    target = dungeon[pz][py + deltay][px + deltax]
+    if target == '#':
+        print('ouch!')
+        hp -= 1
+        deltax = 0
+        deltay = 0
        
     #movement
     px += deltax
