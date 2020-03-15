@@ -44,7 +44,7 @@ print(dungeon[0][2])
 # # ..... rock
 # f ...... food
 # g ....... gold
-
+message = ''
 while hp > 0:
     for y,line in enumerate(dungeon[pz]):
         for x,char in enumerate(line):
@@ -53,7 +53,9 @@ while hp > 0:
             else:
                 print(char,end = '')
         print()
+    print(message)
     command = input('{} hp >>>'.format(hp))
+    message = ''
     deltax = 0 #wo der spieler gehen will
     deltay = 0
     if command == 'a':
@@ -67,12 +69,16 @@ while hp > 0:
     #change level
     if command == 'climb up':
         pz -= 1
+        if pz < 0:
+            pz = 0
     if command == 'climb down':
         pz += 1
+        if pz > len(dungeon) -1:
+            pz = len(dungeon) -1
     #check ob in felsen
     target = dungeon[pz][py + deltay][px + deltax]
     if target == '#':
-        print('ouch!')
+        message += 'ouch'
         hp -= 1
         deltax = 0
         deltay = 0
