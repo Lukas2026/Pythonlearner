@@ -113,9 +113,9 @@ for root, dirs, files in os.walk("."):
 dungeon = []
 for z, raw in enumerate(level_list):
     level = []
-    for y, raw_line in enumerate(raw.splitlines()):
+    for y, raw_line in enumerate(raw):
         line = []
-        for x, char in enumerate(raw_line):
+        for x, char in enumerate(raw_line.strip()):
             if char == "M":
                 Monster(x, y, z)
                 line.append(".")
