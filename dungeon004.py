@@ -1,14 +1,24 @@
 import random
 import os
-
+def roll2(number, sides, reroll):
+    result = random.randint(1, sides)
+    if reroll and result == sides:
+        total += result -1 + roll2(sides,reroll)
+    else:
+        total += result
+    return total
+    
 def roll(die):
     '''return integer value from dice roll'''
-    number = int(die.split('d')[0])
-    sides = int(die.split('d')[1])
+    if "D" in die:
+        reroll = True
+    else:
+        reroll = False
+    number = int(die.lower().split('d')[0])
+    sides = int(die.lower().split('d')[1])
     total = 0
     for i in range(number):
-        result = random.randint(1, sides)
-        total += result
+        total += roll2(sides, reroll)
     return total
 
 
@@ -48,7 +58,7 @@ class Monster:
         self.y = y
         self.z = z
         self.dx = 0
-        self.dy = 0 # where monster want to go
+        self.dy = 0
         self.char = "M"
         print('A new monster has been created')
         self.number = Monster.number
@@ -58,20 +68,16 @@ class Monster:
         self.attackroll = '1d6'
         self.defenseroll = '1d6'
         self.damageroll = '1d6'
-        self.detection_radius = 4
-
-
     def ai(self):
-        """where do i want to go today? we know that Game.zoo[0] is the player"""
-        #calculate distance to player
         player = Game.zoo[0]
-        distance = ((self.x - player.x ) + (self.y - player.y))**0.5
+        self.detectionradius = 7
+        distance = ((self.x - player.x) + (self.y + player.y))**0.5
         self.dx, self.dy = 0, 0
-        if distance > self.detection_radius:
-            # Monster can not sniff/see the player
-            self.dx = random.choice((-1,0,0,1))  # stay around or wanders randomly
+        if distance > self.detectionradius:
+            #monster can not sniff player
+            self.dx = random.choice((-1,0,0,1))
             self.dy = random.choice((-1,0,0,1))
-        else:   # run towards player!
+        else:
             if player.x > self.x:
                 self.dx = 1
             elif player.x < self.x:
@@ -80,7 +86,7 @@ class Monster:
                 self.dy = 1
             elif player.y < self.y:
                 self.dy = -1
-
+                
     def attack(self):
         return roll(self.attackroll)
 
@@ -111,8 +117,6 @@ class Player(Monster):
         self.food = 0
         self.saturation = 1  # 100% = 1.0 50% = 0.5 etc.
 
-    def ai(self):
-        pass # overwriting Monster ai
 
 # build 10 monsters
 # for _ in range(10):
@@ -130,7 +134,7 @@ level_list = []
 for root, dirs, files in os.walk("."):
     for file in sorted(files):
         if file[:5] == "level" and file[-4:] == ".txt":
-            print("reading from disk: ", file)
+            print("reading from disk" , file)
             with open(file) as f:
                 lines = f.readlines()
                 level_list.append(lines)
@@ -158,28 +162,24 @@ for z, raw in enumerate(level_list):
 # M ....... Monster
 message = ''
 while player.hp > 0 and player.saturation > 0:
-    # ------ monster movement -------
-    for m in [m for m in Game.zoo.values() if m.number != 0 and m.z == player.z and m.hp >0]:
-        m.ai() # setting dx and dy
+    #------ monster movement --- 
+    for m in [m for m in Game.zoo.values() if m.number != 0 and m.z == player.z and m.hp > 0]:
+        m.ai()
         target = dungeon[m.z][m.y+m.dy][m.x+m.dx]
-        if target == "#":
-            m.dx, m.dy = 0, 0 # wall is blocking movement
-        for m2 in [m for m in Game.zoo.values() if m.z==player.z and m.hp >0]:
+        if target == "#" :
+            m.dx, m.dy = 0, 0
+        for m2 in [m for m in Game.zoo.values() if m.z==player.z and m.hp > 0]:
             if m2.number == m.number:
                 continue
-            if m2.x == m.x + m.dx and m2.y == m.y + m.dy:
-                # m2 monster is blocking m monster
-                m.dx, m.dy = 0, 0 # stop moving
-                # attack the player ?
+            if m2.x == m.x + m.dx and  m2.y == m.y + m.dy:
+                m.dx, m.dy = 0, 0
                 if m2.number == 0:
                     message += fight(m, player)
                 break
-        else: # no other monster is blocking the movement
+        else:
             m.x += m.dx
             m.y += m.dy
-
-
-    # ------ graphic engine -----
+    #----- grafical engine -----
     for y, line in enumerate(dungeon[player.z]):
         for x, char in enumerate(line):
             # Monster here ?
