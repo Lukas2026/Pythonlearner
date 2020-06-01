@@ -50,23 +50,25 @@ attribute = fields[i]
 hits = len(animals)
 result = list(animals.keys())
 result2 = list(animals.keys())
-print(attribute)
+
+#print(attribute)
 attributes_true = []
 attributes_false = []
 layout = [
             [sg.Text("Lukas's Dycotomous Quiz")],
-            [sg.Text("True Filter",size=(11,1)), sg.Text("False Filter",size=(10,1))],
+            [sg.Text("True Filters:", size=(11,1)), sg.Text("False Filters:", size=(10,1))],
             [
-                sg.Listbox(attributes_true,size=(10,10),background_color='grey',key = 'attr1'),
-                sg.Listbox(attributes_false,size=(10,10),background_color='grey',key = 'attr2'),
+                sg.Listbox(attributes_true,  size=(10,10),background_color='grey', key="attr1"),
+                sg.Listbox(attributes_false, size=(10,10),background_color='grey', key="attr2"),
              ],
-            [sg.Text('Is your animal a {}?'.format(attribute),key = 'question', size=(40,1))],
-            [sg.Radio('True', "RADIO1",key = 'Radio1', visible=True, enable_events=True),
+            [sg.Text('Is your animal a {}?'.format(attribute),key = 'question', size=(30,1))],
+            [sg.Radio('True', "RADIO1", key = 'Radio1', visible=True, enable_events=True),
              sg.Radio('False', "RADIO1",key = 'Radio2', visible=True, enable_events=True)],
             [sg.Button('Next'), sg.Button('Cancel')],
             [sg.Text('I found in my database {} anmials:'.format(hits),key = 'found')],
-            [sg.Listbox(result,size=(40,20),background_color='grey',key = 'listbox')],
+            [sg.Listbox(result,size=(20,20),background_color='grey',key = 'listbox')],
          ]
+
 
 
 # Create the Window
@@ -79,24 +81,24 @@ while True:
     if event in (None, 'Cancel'):   # if user closes window or clicks cancel
         break
     if event == "Radio1":
-        print('Radio1 geklickt')
+        #print("Radio1 geklickt")
         result = [a for a in result2 if animals[a][attribute]]
 
     if event == "Radio2":
-        print('Radio2 geklickt')
+        #print("Radio2 geklickt")
         result = [a for a in result2 if not animals[a][attribute]]
-    if event == 'Next':
-        if not values["Radio1"] and not values["Radio2"]:
-            #print("Bitte")
-            sg.Popup("Bitte zuerst True oder false auswählen")
-            continue
 
-        if values ["Radio1"]:
+    if event == "Next":
+        if not values["Radio1"] and not values["Radio2"]:
+            #print("bitte zuerst Radiobuttons klicken")
+            sg.Popup("bitte zuerst True oder False auswählen")
+            continue
+        if values["Radio1"]:
             attributes_true.append(attribute)
         else:
             attributes_false.append(attribute)
-        window['attr1'](attributes_true)
-        window['attr2'](attributes_false)
+        window["attr1"](attributes_true)
+        window["attr2"](attributes_false)
         result = []
         for a in animals.keys():
             ok = True
@@ -111,27 +113,28 @@ while True:
                     break
             if ok:
                 result.append(a)
-
-
-
-        #backup result
+        # backup result
         result2 = [a for a in result]
-        #
-
-        #prep next question
+        # reset radios
+        window.Element('Radio1').TKIntVar.set(0) # clear both Radio buttons
+        #values["Radio1"] = False
+        #window["Radio1"](None)
+        #window["Radio1"](False)
+        
+        # prepare next question
         i += 1
         attribute = fields[i]
-        window['question']('Is your animal {}'.format(attribute))
+        window['question']('Is your animal {}?'.format(attribute))
+        window.read()
 
-
-
+    # ---- always ----
     hits = len(result)
-    #print(attribute)
-    print(hits)
-    print(filterstring)
     window['found']('I found in my database {} anmials:'.format(hits))
     window['listbox'](result)
-    #print('You entered ', values[0])
-    #print(values['animal'],values['attribute'],'=',animals[values['animal']][values['attribute']])
-    #print(values)
+    if hits == 1:
+        print("hurra")
+    
+    #window.read()
+        
+
 window.close()
